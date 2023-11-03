@@ -1,3 +1,30 @@
+# How to run DPO with LLama 2:
+
+### Step 1: Set up environment
+
+First, create a virtualenv and install the dependencies. Python 3.8+ is recommended.
+
+    python3 -m venv env
+    source env/bin/activate
+    pip install -r requirements.txt
+
+
+### Step 2: Run SFT
+
+    python -u train.py model=llama2-7b datasets=[hh] loss=sft exp_name=anthropic_dpo_llama2-7b gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=FSDPTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
+
+This command is training on Anthropic-HH data.
+This command uses FSDP's mixed precision in bfloat16 to speed up training.
+
+
+### Step 3: Run DPO
+
+    python -u train.py model=llama2-7b datasets=[hh] loss=dpo loss.beta=0.1 exp_name=anthropic_dpo_llama2-7b gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=FSDPTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16 model.archive=/path/to/archive/from/sft/LATEST/policy.pt
+
+
+----
+
+**_Original [eric-mitchell/direct-preference-optimization](https://github.com/eric-mitchell/direct-preference-optimization) README:_**
 # DPO: Direct Preference Optimization
 
 ## What is this repo?

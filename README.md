@@ -8,10 +8,17 @@ First, create a virtualenv and install the dependencies. Python 3.8+ is recommen
     source env/bin/activate
     pip install -r requirements.txt
 
+### Step 2: Login to Hugging Face
 
-### Step 2: Run SFT
+Before this step, make sure to request access to the Llama 2 repo on Hugging Face
 
-    python -u train.py model=llama2-7b datasets=[hh] loss=sft exp_name=anthropic_dpo_llama2-7b gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=FSDPTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
+    huggingface-cli login
+
+Follow terminal instructions and enter your hugging face token.
+
+### Step 3: Run SFT
+
+    python -u train.py model=llama2-7b loss=sft exp_name=anthropic_dpo_llama2-7b gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=FSDPTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16
 
 This command is training on Anthropic-HH data.
 This command uses FSDP's mixed precision in bfloat16 to speed up training.
@@ -19,7 +26,7 @@ This command uses FSDP's mixed precision in bfloat16 to speed up training.
 
 ### Step 3: Run DPO
 
-    python -u train.py model=llama2-7b datasets=[hh] loss=dpo loss.beta=0.1 exp_name=anthropic_dpo_llama2-7b gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=FSDPTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16 model.archive=/path/to/archive/from/sft/LATEST/policy.pt
+    python -u train.py model=llama2-7b loss=dpo loss.beta=0.1 exp_name=anthropic_dpo_llama2-7b gradient_accumulation_steps=2 batch_size=64 eval_batch_size=32 trainer=FSDPTrainer sample_during_eval=false model.fsdp_policy_mp=bfloat16 model.archive=/path/to/archive/from/sft/LATEST/policy.pt
 
 
 ----
